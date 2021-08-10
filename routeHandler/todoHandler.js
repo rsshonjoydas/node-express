@@ -11,6 +11,7 @@ router.get('/', async (req, res) => {
       _id: 0,
       __v: 0,
     })
+    .limit(3)
     .exec((err, data) => {
       if (err) {
         res.status(500).json({
