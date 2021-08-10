@@ -26,6 +26,22 @@ router.get('/', (req, res) => {
     });
 });
 
+// ! get active todo
+router.get('/active', async (req, res) => {
+  const todo = new Todo();
+  const data = await todo.findActive();
+  try {
+    res.status(200).json({
+      result: data,
+      message: 'Todo get successfully!',
+    });
+  } catch (err) {
+    res.status(500).json({
+      error: 'There was a server side error!',
+    });
+  }
+});
+
 // ! get a todo by id
 router.get('/:id', async (req, res) => {
   try {
