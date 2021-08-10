@@ -2,6 +2,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 
 const todoHandler = require("./routeHandler/todoHandler")
+const userHandler = require("./routeHandler/userHandler")
 
 const app = express()
 app.use(express.json())
@@ -20,6 +21,7 @@ function errorHandler(err, req, res, next) {
 }
 
 app.use("/todo", todoHandler)
+app.use("/user", userHandler)
 
 app.listen(3000, () => {
   console.log('app listening at port 3000');
