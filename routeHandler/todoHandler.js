@@ -72,6 +72,21 @@ router.get('/js', async (req, res) => {
         error: 'There was a server side error!',
       });
     }
+})
+
+// ! get todo by language
+router.get('/language', async (req, res) => {
+  const data = await Todo.find().byLanguage("py")
+    try {
+      res.status(200).json({
+        result: data,
+        message: 'Todo get successfully!',
+      });
+    } catch (err) {
+      res.status(500).json({
+        error: 'There was a server side error!',
+      });
+    }
 });
 
 // ! get a todo by id
