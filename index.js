@@ -17,15 +17,17 @@ mongoose
   .then(() => console.log('database connection successfully'))
   .catch((err) => console.log(err));
 
-function errorHandler(err, req, res, next) {
+app.use('/todo', todoHandler);
+app.use('/user', userHandler);
+
+const errorHandler = (err, req, res, next) => {
   if (res.handlersSend) {
     return next(err);
   }
   res.status(500).json({ error: err });
-}
+};
 
-app.use('/todo', todoHandler);
-app.use('/user', userHandler);
+app.use(errorHandler);
 
 app.listen(3000, () => {
   console.log('app listening at port 3000');
