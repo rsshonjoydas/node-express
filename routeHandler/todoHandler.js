@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const todoSchema = require('../schemas/todoSchema');
-const Todo = new mongoose.model('Todo', todoSchema);
+const todoSchema = require("../schemas/todoSchema");
+const Todo = new mongoose.model("Todo", todoSchema);
 const checkLogin = require('../middlewares/checkLogin');
 
 // ! get all the todo
-router.get("/", checkLogin, (req, res) => {
+router.get('/', checkLogin, (req, res) => {
   Todo.find({})
+    .populate('user', 'name username -_id')
     .select({
       _id: 0,
       __v: 0,
@@ -17,12 +18,12 @@ router.get("/", checkLogin, (req, res) => {
     .exec((err, data) => {
       if (err) {
         res.status(500).json({
-          error: "There was a server side error!",
+          error: 'There was a server side error!',
         });
       } else {
         res.status(200).json({
           result: data,
-          message: "Success",
+          message: 'Success',
         });
       }
     });
@@ -114,7 +115,7 @@ router.post('/', checkLogin, async (req, res) => {
   });
 
   try {
-    const todo = await newTodo.save();
+    await newTodo.save();
 
     res.status(200).json({
       message: 'Todo was inserted successfully!',
