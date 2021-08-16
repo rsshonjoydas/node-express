@@ -3,28 +3,26 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const todoSchema = require('../schemas/todoSchema');
 const Todo = new mongoose.model('Todo', todoSchema);
-const checkLogin = require("../middlewares/checkLogin")
+const checkLogin = require('../middlewares/checkLogin');
 
 // ! get all the todo
-router.get('/',checkLogin, (req, res) => {
-  console.log(req.username);
-  console.log(req.userId);
-  
-  Todo.find({ status: 'active' })
+router.get("/", checkLogin, (req, res) => {
+  Todo.find({})
     .select({
       _id: 0,
       __v: 0,
+      date: 0,
     })
-    .limit(3)
+    .limit(20)
     .exec((err, data) => {
       if (err) {
         res.status(500).json({
-          error: 'There was a server side error!',
+          error: "There was a server side error!",
         });
       } else {
         res.status(200).json({
           result: data,
-          message: 'Todo get successfully!',
+          message: "Success",
         });
       }
     });
@@ -65,32 +63,32 @@ router.get('/activeCallback', (req, res) => {
 
 // ! get active todo with statics methods
 router.get('/js', async (req, res) => {
-  const data = await Todo.findByJS()
-    try {
-      res.status(200).json({
-        result: data,
-        message: 'Todo get successfully!',
-      });
-    } catch (err) {
-      res.status(500).json({
-        error: 'There was a server side error!',
-      });
-    }
-})
+  const data = await Todo.findByJS();
+  try {
+    res.status(200).json({
+      result: data,
+      message: 'Todo get successfully!',
+    });
+  } catch (err) {
+    res.status(500).json({
+      error: 'There was a server side error!',
+    });
+  }
+});
 
 // ! get todo by language
 router.get('/language', async (req, res) => {
-  const data = await Todo.find().byLanguage("py")
-    try {
-      res.status(200).json({
-        result: data,
-        message: 'Todo get successfully!',
-      });
-    } catch (err) {
-      res.status(500).json({
-        error: 'There was a server side error!',
-      });
-    }
+  const data = await Todo.find().byLanguage('py');
+  try {
+    res.status(200).json({
+      result: data,
+      message: 'Todo get successfully!',
+    });
+  } catch (err) {
+    res.status(500).json({
+      error: 'There was a server side error!',
+    });
+  }
 });
 
 // ! get a todo by id
@@ -109,19 +107,24 @@ router.get('/:id', async (req, res) => {
 });
 
 // ! post todo
-router.post('/', async (req, res) => {
-  const newTodo = new Todo(req.body);
-  await newTodo.save((err) => {
-    if (err) {
-      res.status(500).json({
-        error: 'There was a server side error!',
-      });
-    } else {
-      res.status(200).json({
-        message: 'Todo was inserted successfully!',
-      });
-    }
+router.post('/', checkLogin, async (req, res) => {
+  const newTodo = new Todo({
+    ...req.body,
+    user: req.userId,
   });
+
+  try {
+    const todo = await newTodo.save();
+
+    res.status(200).json({
+      message: 'Todo was inserted successfully!',
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      error: 'There was a server side error!',
+    });
+  }
 });
 
 // ! post multiple todo
